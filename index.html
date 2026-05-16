@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Dashboard</title>
+    <title>Responsive Dashboard with Slider</title>
     <!-- Menggunakan Font Awesome untuk Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -90,7 +90,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            margin-left: var(--sidebar-width); /* Memberi ruang untuk sidebar di desktop */
+            margin-left: var(--sidebar-width);
             height: 100%;
             transition: margin 0.3s ease;
         }
@@ -112,7 +112,7 @@
             font-size: 1.2rem;
             cursor: pointer;
             color: var(--text-dark);
-            display: none; /* Sembunyikan di desktop */
+            display: none;
         }
 
         .nav-user {
@@ -135,7 +135,113 @@
             overflow-y: auto;
         }
 
-        /* --- GRID CARDS (DASHBOARD CONTENT) --- */
+        /* --- IMAGE SLIDER (CAROUSEL) --- */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 250px; /* Ukuran default desktop */
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .slider-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 20px;
+            padding-top: 40px;
+        }
+
+        .slide-caption h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .slide-caption p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Tombol Navigasi Slider */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            z-index: 10;
+        }
+
+        .slider-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+            color: #000;
+        }
+
+        .slider-btn.prev { left: 15px; }
+        .slider-btn.next { right: 15px; }
+
+        /* Titik Indikator Slider */
+        .slider-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .dot.active {
+            background: var(--text-light);
+            width: 25px;
+            border-radius: 10px;
+        }
+
+        /* --- GRID CARDS --- */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -185,18 +291,17 @@
         /* --- RESPONSIVE LAYOUT (MOBILE & TABLET) --- */
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%); /* Sembunyikan sidebar di kiri luar layar */
+                transform: translateX(-100%);
             }
 
             .main-content {
-                margin-left: 0; /* Full width di HP */
+                margin-left: 0;
             }
 
             .nav-toggle {
-                display: block; /* Munculkan tombol menu di HP */
+                display: block;
             }
 
-            /* Saat sidebar aktif/terbuka di HP */
             .sidebar.active {
                 transform: translateX(0);
             }
@@ -204,18 +309,32 @@
             .sidebar-overlay.active {
                 display: block;
             }
+
+            /* Sesuaikan tinggi slide saat di HP agar tidak terlalu memakan layar */
+            .slider-container {
+                height: 200px;
+                margin-bottom: 100px;
+            }
+
+            .slide-caption h2 {
+                font-size: 1rem;
+            }
+
+            .slide-caption p {
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Overlay untuk menutup menu saat klik di luar sidebar (khusus HP) -->
+    <!-- Overlay untuk HP -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <i class="fa-solid asleep fa-chart-pie mr-2"></i> MyDashboard
+            <i class="fa-solid fa-chart-pie" style="margin-right: 10px;"></i> MyDashboard
         </div>
         <ul class="sidebar-menu">
             <li class="active"><a href="#"><i class="fa-solid fa-house"></i> Dashboard</a></li>
@@ -244,7 +363,45 @@
 
         <!-- CONTENT BODY -->
         <main class="content-body">
-            <!-- Cards Grid -->
+            
+            <!-- TAMBAHAN: IMAGE SLIDER -->
+            <div class="slider-container">
+                <div class="slider-wrapper" id="sliderWrapper">
+                    <!-- Slide 1 -->
+                    <div class="slide">
+                        <img src="img/IMG_9509.JPG" alt="Slide 1">
+                        <div class="slide-caption">
+                            <h2>Analisis Performa Kuartal Ini</h2>
+                            <p>Pantau grafik perkembangan penjualan toko Anda secara real-time.</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="slide">
+                        <img src="img/IMG_9510.JPG" alt="Slide 2">
+                        <div class="slide-caption">
+                            <h2>Promo Kampanye Digital Terkini</h2>
+                            <p>Maksimalkan jangkauan pasar dengan strategi marketing terbaru.</p>
+                        </div>
+                    </div>
+                    <!-- Slide 3 -->
+                    <div class="slide">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="Slide 3">
+                        <div class="slide-caption">
+                            <h2>Pemeliharaan Sistem Terjadwal</h2>
+                            <p>Sistem akan dioptimalkan pada hari Minggu pukul 00.00 WIB.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Navigasi -->
+                <button class="slider-btn prev" id="prevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="slider-btn next" id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+
+                <!-- Titik Indikator -->
+                <div class="slider-dots" id="sliderDots"></div>
+            </div>
+
+            <!-- CARDS GRID (BOX BERANDA) -->
             <div class="cards-grid">
                 <div class="card">
                     <div class="card-info">
@@ -269,29 +426,90 @@
                 </div>
             </div>
 
-            <!-- Tempat untuk konten tambahan seperti tabel atau grafik -->
-            <div class="card" style="min-height: 200px; display: block;">
-                <h3 style="margin-bottom: 15px;">Selamat Datang Kembali!</h3>
-                <p style="color: #64748b;">Ini adalah tampilan dashboard responsif. Jika kamu membuka halaman ini di Google Chrome (Inspect Element -> Mode HP) atau lewat handphone, klik tombol menu di kiri atas untuk memunculkan sidebar.</p>
+            <!-- Konten Tambahan -->
+            <div class="card" style="min-height: 120px; display: block;">
+                <h3 style="margin-bottom: 10px;">Notifikasi</h3>
+                <p style="color: #64748b; font-size: 0.95rem;">Slider di atas otomatis berpindah setiap 5 detik. Kamu juga bisa menggesernya secara manual menggunakan tombol panah kiri/kanan atau klik titik indikator di bawah foto.</p>
             </div>
         </main>
     </div>
 
-    <!-- JAVASCRIPT FOR TOGGLE SIDEBAR -->
+    <!-- SCRIPT JAVASCRIPT -->
     <script>
+        // --- LOGIK SIDEBAR TAMPILAN HP ---
         const sidebar = document.getElementById('sidebar');
         const navToggle = document.getElementById('navToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        // Fungsi Buka/Tutup Sidebar
         function toggleSidebar() {
             sidebar.classList.toggle('active');
             sidebarOverlay.classList.toggle('active');
         }
-
-        // Event Listener ketika tombol hamburger atau overlay diklik
         navToggle.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
+
+
+        // --- LOGIK IMAGE SLIDER ---
+        const wrapper = document.getElementById('sliderWrapper');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dotsContainer = document.getElementById('sliderDots');
+
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+        let slideInterval;
+
+        // Membuat titik indikator secara dinamis berdasarkan jumlah slide
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if(index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = document.querySelectorAll('.dot');
+
+        // Fungsi memperbarui posisi slide dan titik aktif
+        function updateSlider() {
+            wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[currentIndex].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            currentIndex = index;
+            updateSlider();
+            resetTimer(); // Reset auto-slide saat user klik manual
+        }
+
+        // Pengatur waktu otomatis jalannya slide (5 detik)
+        function startTimer() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetTimer() {
+            clearInterval(slideInterval);
+            startTimer();
+        }
+
+        // Event Listener Tombol Navigasi
+        nextBtn.addEventListener('click', () => { nextSlide(); resetTimer(); });
+        prevBtn.addEventListener('click', () => { prevSlide(); resetTimer(); });
+
+        // Mulai jalankan auto-slide saat web dibuka
+        startTimer();
     </script>
 </body>
 </html>
