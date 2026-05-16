@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Dashboard</title>
+    <!-- Menggunakan Font Awesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- RESET & VARIABLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #f4f6f9;
+            --bg-sidebar: #1e293b;
+            --text-light: #ffffff;
+            --text-dark: #334155;
+            --accent: #3b82f6;
+            --navbar-height: 60px;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            color: var(--text-light);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            height: var(--navbar-height);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li.active a {
+            color: var(--text-light);
+            background-color: #334155;
+            border-left: 4px solid var(--accent);
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: var(--sidebar-width); /* Memberi ruang untuk sidebar di desktop */
+            height: 100%;
+            transition: margin 0.3s ease;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            height: var(--navbar-height);
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .nav-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            display: none; /* Sembunyikan di desktop */
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-user img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* --- CONTENT BODY --- */
+        .content-body {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* --- GRID CARDS (DASHBOARD CONTENT) --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-info h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .card-info p {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            color: var(--accent);
+            opacity: 0.8;
+        }
+
+        /* --- OVERLAY UNTUK HP --- */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 99;
+        }
+
+        /* --- RESPONSIVE LAYOUT (MOBILE & TABLET) --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%); /* Sembunyikan sidebar di kiri luar layar */
+            }
+
+            .main-content {
+                margin-left: 0; /* Full width di HP */
+            }
+
+            .nav-toggle {
+                display: block; /* Munculkan tombol menu di HP */
+            }
+
+            /* Saat sidebar aktif/terbuka di HP */
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay untuk menutup menu saat klik di luar sidebar (khusus HP) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid asleep fa-chart-pie mr-2"></i> MyDashboard
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="#"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fa-solid fa-users"></i> Pengguna</a></li>
+            <li><a href="#"><i class="fa-solid fa-box"></i> Produk</a></li>
+            <li><a href="#"><i class="fa-solid fa-chart-line"></i> Laporan</a></li>
+            <li><a href="#"><i class="fa-solid fa-gear"></i> Pengaturan</a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <button class="nav-toggle" id="navToggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="nav-search">
+                <h3>Beranda</h3>
+            </div>
+            <div class="nav-user">
+                <span>Admin</span>
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Avatar">
+            </div>
+        </nav>
+
+        <!-- CONTENT BODY -->
+        <main class="content-body">
+            <!-- Cards Grid -->
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-info">
+                        <h3>Total Pendapatan</h3>
+                        <p>Rp 15.000.000</p>
+                    </div>
+                    <i class="fa-solid fa-wallet card-icon"></i>
+                </div>
+                <div class="card">
+                    <div class="card-info">
+                        <h3>Pengunjung</h3>
+                        <p>1,250</p>
+                    </div>
+                    <i class="fa-solid fa-eye card-icon"></i>
+                </div>
+                <div class="card">
+                    <div class="card-info">
+                        <h3>Pesanan Baru</h3>
+                        <p>48</p>
+                    </div>
+                    <i class="fa-solid fa-shopping-cart card-icon"></i>
+                </div>
+            </div>
+
+            <!-- Tempat untuk konten tambahan seperti tabel atau grafik -->
+            <div class="card" style="min-height: 200px; display: block;">
+                <h3 style="margin-bottom: 15px;">Selamat Datang Kembali!</h3>
+                <p style="color: #64748b;">Ini adalah tampilan dashboard responsif. Jika kamu membuka halaman ini di Google Chrome (Inspect Element -> Mode HP) atau lewat handphone, klik tombol menu di kiri atas untuk memunculkan sidebar.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT FOR TOGGLE SIDEBAR -->
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const navToggle = document.getElementById('navToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        // Fungsi Buka/Tutup Sidebar
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        // Event Listener ketika tombol hamburger atau overlay diklik
+        navToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+    </script>
+</body>
+</html>
